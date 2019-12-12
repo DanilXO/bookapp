@@ -1,13 +1,16 @@
-from flask import Flask
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
+# app/__init__.py
 
-from config import Config
+from flask_restplus import Api
+from flask import Blueprint
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+from app.main.controllers.user_controller import api as user_ns
 
-from app import routes, models
+blueprint = Blueprint('api', __name__)
 
+api = Api(blueprint,
+          title='FLASK RESTPLUS API BOILER-PLATE WITH JWT',
+          version='1.0',
+          description='a boilerplate for flask restplus web service'
+          )
+
+api.add_namespace(user_ns, path='/user')
