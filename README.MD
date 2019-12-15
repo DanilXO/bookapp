@@ -43,7 +43,6 @@
             ├── routes.py                  # Представления (views and routes)
         ├── migrations                     # Миграции БД
         ├── manage.py                      # Managment команды для удобства запуска и тестирования                           
-        ├── README.md                      # Описание для github
         ├── requirements.txt               # Необходимые зависимости
     
 ### Демонстрация работы:
