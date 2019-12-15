@@ -1,11 +1,11 @@
-from flask import request, jsonify
+from flask import request
 from flask_restplus import Resource
 
-from app.main.models.book import Book
+from app.main.services.pagination_helper import PAGINATION_REQUEST_PARSER
 from app.main.utils.decorator import add_access_token_header, token_required, admin_token_required
 from ..utils.dto import BookDto, WriterDto, RatingDto
 from ..services.book_service import save_new_book, get_book, add_book_rating, \
-    delete_book, update_book
+    delete_book, update_book, get_books_by_page
 
 api = BookDto.api
 _book = BookDto.book
@@ -13,14 +13,17 @@ _writer = WriterDto.writer
 _rating = RatingDto.rating
 
 
-@api.route('/page')
+@api.route('/')
 @add_access_token_header(api)
 class BookList(Resource):
     @token_required
-    # @api.marshal_list_with(_book, envelope='data')
-    def get(self, **kwargs):
+    @api.param('page_num', 'The page number', required=True)
+    @api.expect(PAGINATION_REQUEST_PARSER)
+    def get(self, *args, **kwargs):
         """List all books"""
-        return pagination.paginate(AuthorModel, author_fields)
+        args = PAGINATION_REQUEST_PARSER.parse_args()
+        page_num = args.get('page_num', 1)
+        return get_books_by_page(api, _book, page_num, request.base_url)
 
     @api.expect(_book, validate=True)
     @api.response(201, 'Book successfully created.')

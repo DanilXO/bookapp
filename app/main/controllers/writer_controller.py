@@ -1,7 +1,8 @@
 from flask import request
 from flask_restful import Resource
 
-from app.main.services.writer_service import get_all_writers, save_new_writer, get_writer, update_writer, delete_writer
+from app.main.services.writer_service import save_new_writer, get_writer, update_writer, delete_writer, \
+    get_writers_by_page
 from app.main.utils.decorator import add_access_token_header, token_required, admin_token_required
 from app.main.utils.dto import WriterDto
 
@@ -13,10 +14,15 @@ _writer = WriterDto.writer
 @add_access_token_header(api)
 class WriterList(Resource):
     @token_required
-    @api.marshal_list_with(_writer, envelope='data')
-    def get(self, **kwargs):
+    # @api.param('page_num', 'The page number', required=True)
+    # @api.expect(PAGINATION_REQUEST_PARSER)
+    def get(self, *args, **kwargs):
         """List all writers"""
-        return get_all_writers()
+        print(request)
+        # args = PAGINATION_REQUEST_PARSER.parse_args()
+        # page_num = args.get('page_num', 1)
+        # return get_writers_by_page(api, _writer, page_num, request.base_url)
+        return {}
 
     @api.expect(_writer, validate=True)
     @api.response(201, 'Writer successfully created.')

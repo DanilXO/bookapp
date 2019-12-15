@@ -1,12 +1,13 @@
 from app.main import db
 from app.main.models.book import Book, Rating, Writer
 from app.main.models.user import User
+from app.main.services.pagination_helper import get_paginated_list
 from app.main.services.user_service import save_changes
 from app.main.utils.tools import get_or_create
 
 
-def get_all_books(page_num):
-    return Book.query.all()
+def get_books_by_page(api, marshal_object, page_num, base_url):
+    return get_paginated_list(api, marshal_object, Book, page_num, base_url)
 
 
 def get_book(book_id):

@@ -13,7 +13,6 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    PAGINATION_LIMIT = 20
 
 
 class TestingConfig(Config):
@@ -22,12 +21,10 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app_test.db')
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    PAGINATION_LIMIT = 20
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    PAGINATION_LIMIT = 20
 
 
 config_by_name = dict(

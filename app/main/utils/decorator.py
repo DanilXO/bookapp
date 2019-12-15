@@ -17,7 +17,6 @@ def add_access_token_header(api):
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        print(request)
         data, status = Auth.get_logged_in_user(request)
         token = data.get('data')
         if not token:

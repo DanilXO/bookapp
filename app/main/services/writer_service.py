@@ -1,7 +1,9 @@
+from app.main.models.book import Writer
+from app.main.services.pagination_helper import get_paginated_list
 
-def get_all_writers():
-    # return Writer.query.all()
-    pass
+
+def get_writers_by_page(api, marshal_object, page_num, base_url):
+    return get_paginated_list(api, marshal_object, Writer, page_num, base_url)
 
 def get_writer(writer_id):
     # return Writer.query.filter_by(id=writer_id).first()
