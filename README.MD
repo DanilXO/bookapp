@@ -47,3 +47,17 @@
     
 ### Демонстрация работы:
 ![Screenshot](http://dl3.joxi.net/drive/2019/12/15/0038/4064/2539488/88/d2a56c16e0.png)
+
+### Развертывание:
+    # Клонировать репозиторий
+    >>> git clone https://github.com/DanilXO/bookapp.git
+    >>> cd bookapp
+    # Создать и активировать виртуальное окружение (Windows | Unix)
+    >>> python -m venv venv
+    >>> venv\Scripts\activate.bat | source tutorial-env/bin/activate
+    # Установить зависимости
+    >>> pip install -r requirements.txt
+    # Выполнить миграции
+    >>> python manage.py db upgrade
+    # Запустить
+    >>> python manage.py run
