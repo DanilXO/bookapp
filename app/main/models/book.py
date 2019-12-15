@@ -36,11 +36,11 @@ class Writer(db.Model):
 
     @property
     def full_name(self):
-        return f'{self.first_name}{self.last_name}'
+        return f'{self.first_name} {self.last_name}'
 
     @property
     def top_books(self):
-        return Book.query.filter(Book.authors.any(id=self.id)).order_by(Book.rating).limit(5).all()
+        return Book.query.filter(Book.authors.any(id=self.id)).order_by(desc(Book.rating)).limit(5).all()
 
     def __repr__(self):
         return '<Writer {}>'.format(self.full_name)

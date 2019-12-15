@@ -64,6 +64,7 @@ def update_book(book_id, data):
 def add_book_rating(user_id, book_id, data):
     rating_exists = Rating.query.filter_by(user_id=user_id, book_id=book_id).first()
     value = data['value']
+    assert isinstance(value, int) and 1 <= value <= 5, "Incorrect value"
     book = Book.query.filter_by(id=book_id).first()
     user = User.query.filter_by(id=user_id).first()
     if not book or not user:
@@ -93,7 +94,7 @@ def add_book_rating(user_id, book_id, data):
 def save_new_book(data):
     book_exists = Book.query.filter_by(name=data['name']).first()
     if not book_exists:
-        authors_data = data['authors']
+        authors_data = data.get('authors', [])
         authors = []
         for author_data in authors_data:
             author = get_or_create(db, Writer, first_name=author_data.get('first_name'),
