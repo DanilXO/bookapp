@@ -3,13 +3,12 @@ from flask_restplus import Resource
 
 from app.main.services.pagination_helper import PAGINATION_REQUEST_PARSER
 from app.main.utils.decorator import add_access_token_header, token_required, admin_token_required
-from ..utils.dto import BookDto, WriterDto, RatingDto
+from ..utils.dto import BookDto, RatingDto
 from ..services.book_service import save_new_book, get_book, add_book_rating, \
     delete_book, update_book, get_books_by_page
 
 api = BookDto.api
 _book = BookDto.book
-_writer = WriterDto.writer
 _rating = RatingDto.rating
 
 
@@ -51,20 +50,22 @@ class BookResource(Resource):
             return book
 
     @api.doc('update a book')
+    @api.response(204, 'Book successfully updated.')
     @api.expect(_book, validate=True)
     @api.marshal_with(_book)
     @token_required
-    def patch(self, book_id):
+    def patch(self, book_id, **kwargs):
         """Update a book by id"""
         data = request.json
         response = update_book(book_id, data)
         return response
 
     @api.doc('update a book')
+    @api.response(204, 'Book successfully updated.')
     @api.expect(_book, validate=True)
     @api.marshal_with(_book)
     @token_required
-    def put(self, book_id):
+    def put(self, book_id, **kwargs):
         """Update a book by id"""
         data = request.json
         response = update_book(book_id, data)

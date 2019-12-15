@@ -54,9 +54,8 @@ class WriterDto:
         'id': fields.Integer(readonly=True, description=' Writer\'s id'),
         'first_name': fields.String(required=True, description='writer first name'),
         'last_name': fields.String(required=True, description='writer last name'),
-        # 'top_books': fields.List(fields.String)
         'top_books': fields.List(fields.Nested(BookIncludeDto.include_book),
-                                 description='Writers\'s top books'),
+                                 description='Writers\'s top books', readonly=True),
     })
 
 

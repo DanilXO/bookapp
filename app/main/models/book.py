@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from .. import db
@@ -40,9 +40,7 @@ class Writer(db.Model):
 
     @property
     def top_books(self):
-        # print(type(self.books))
-        # return self.books.order_by(Book.rating).limit(5).all()
-        return []
+        return Book.query.filter(Book.authors.any(id=self.id)).order_by(Book.rating).limit(5).all()
 
     def __repr__(self):
         return '<Writer {}>'.format(self.full_name)
@@ -61,6 +59,10 @@ class Book(db.Model):
     def rating(self):
         average = db.session.query(func.avg(Rating.value).label('average')).filter(Rating.book_id == self.id).first()[0]
         return average if average else 1
+
+    @rating.expression
+    def rating(cls):
+        return db.session.query(func.avg(Rating.value).label('average')).filter(Rating.book_id == cls.id)
 
     def __repr__(self):
         return '<Book {}>'.format(self.name)

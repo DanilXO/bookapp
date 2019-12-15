@@ -1,8 +1,9 @@
 from flask import request
-from flask_restful import Resource
+from flask_restplus import Resource
 
-from app.main.services.writer_service import save_new_writer, get_writer, update_writer, delete_writer, \
-    get_writers_by_page
+from app.main.services.pagination_helper import PAGINATION_REQUEST_PARSER
+from app.main.services.writer_service import get_writers_by_page, save_new_writer, get_writer, update_writer, \
+    delete_writer
 from app.main.utils.decorator import add_access_token_header, token_required, admin_token_required
 from app.main.utils.dto import WriterDto
 
@@ -14,15 +15,13 @@ _writer = WriterDto.writer
 @add_access_token_header(api)
 class WriterList(Resource):
     @token_required
-    # @api.param('page_num', 'The page number', required=True)
-    # @api.expect(PAGINATION_REQUEST_PARSER)
+    @api.param('page_num', 'The page number', required=True)
+    @api.expect(PAGINATION_REQUEST_PARSER)
     def get(self, *args, **kwargs):
         """List all writers"""
-        print(request)
-        # args = PAGINATION_REQUEST_PARSER.parse_args()
-        # page_num = args.get('page_num', 1)
-        # return get_writers_by_page(api, _writer, page_num, request.base_url)
-        return {}
+        args = PAGINATION_REQUEST_PARSER.parse_args()
+        page_num = args.get('page_num', 1)
+        return get_writers_by_page(api, _writer, page_num, request.base_url)
 
     @api.expect(_writer, validate=True)
     @api.response(201, 'Writer successfully created.')
@@ -41,7 +40,7 @@ class WriterResource(Resource):
     @api.doc('get a writer')
     @api.marshal_with(_writer)
     @token_required
-    def get(self, writer_id):
+    def get(self, writer_id, **kwargs):
         """Get a writer by id"""
         writer = get_writer(writer_id)
         if not writer:
@@ -50,20 +49,22 @@ class WriterResource(Resource):
             return writer
 
     @api.doc('update a writer')
+    @api.response(204, 'Writer successfully updated.')
     @api.expect(_writer, validate=True)
     @api.marshal_with(_writer)
     @token_required
-    def patch(self, writer_id):
+    def patch(self, writer_id, **kwargs):
         """Update a writer by id"""
         data = request.json
         response = update_writer(writer_id, data)
         return response
 
     @api.doc('update a writer')
+    @api.response(204, 'Writer successfully updated.')
     @api.expect(_writer, validate=True)
     @api.marshal_with(_writer)
     @token_required
-    def put(self, writer_id):
+    def put(self, writer_id, **kwargs):
         """Update a writer by id"""
         data = request.json
         response = update_writer(writer_id, data)

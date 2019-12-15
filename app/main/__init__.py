@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_rest_paginate import Pagination
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
