@@ -40,7 +40,8 @@ class Writer(db.Model):
 
     @property
     def top_books(self):
-        return Book.query.filter(Book.authors.any(id=self.id)).order_by(desc(Book.rating)).limit(5).all()
+        return Book.query.filter(Book.authors.any(id=self.id)).order_by(
+            desc(Book.rating_sum / Book.rating_count)).limit(5).all()
 
     def __repr__(self):
         return '<Writer {}>'.format(self.full_name)
@@ -54,15 +55,40 @@ class Book(db.Model):
     authors = db.relationship('Writer', secondary=association_w_b, lazy='subquery',
                               backref=db.backref('books', lazy=True))
     _ratings = db.relationship('Rating', backref='book', lazy='dynamic')
+    rating_sum = db.Column(db.Integer)
+    rating_count = db.Column(db.Integer)
 
-    @hybrid_property
+    @property
     def rating(self):
-        average = db.session.query(func.avg(Rating.value).label('average')).filter(Rating.book_id == self.id).first()[0]
-        return average if average else 1
+        return self.rating_sum / self.rating_count if self.rating_count is not None and self.rating_count > 0 else 1
 
-    @rating.expression
-    def rating(cls):
-        return db.session.query(func.avg(Rating.value).label('average')).filter(Rating.book_id == cls.id)
+    def add_rating_count(self):
+        if self.rating_count:
+            self.rating_count += 1
+        else:
+            self.rating_count = 1
+
+    def add_rating_sum(self, value):
+        if self.rating_sum:
+            self.rating_sum += value
+        else:
+            self.rating_sum = value
+
+    def sub_rating_sum(self, value):
+        if self.rating_sum:
+            self.rating_sum -= value
+
+    # Первая идея, не самая удачная, так как с увеличением рейтинга будет увеличиваться время просчета и
+    # выполнения запроса. Решил отказаться в пользу сохранения количества и суммы рейтинга.
+    # @hybrid_property
+    # def rating(self):
+    #     average = db.session.query(func.avg(Rating.value)\
+    # .label('average')).filter(Rating.book_id == self.id).first()[0]
+    #     return average if average else 1
+    #
+    # @rating.expression
+    # def rating(cls):
+    #     return db.session.query(func.avg(Rating.value).label('average')).filter(Rating.book_id == cls.id)
 
     def __repr__(self):
         return '<Book {}>'.format(self.name)

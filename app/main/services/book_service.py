@@ -62,7 +62,6 @@ def update_book(book_id, data):
 
 
 def add_book_rating(user_id, book_id, data):
-    rating_exists = Rating.query.filter_by(user_id=user_id, book_id=book_id).first()
     value = data['value']
     assert isinstance(value, int) and 1 <= value <= 5, "Incorrect value"
     book = Book.query.filter_by(id=book_id).first()
@@ -74,16 +73,24 @@ def add_book_rating(user_id, book_id, data):
         }
         return response_object, 404
     else:
+        rating_exists = Rating.query.filter_by(user_id=user_id, book_id=book_id).first()
         if not rating_exists:
             new_rating = Rating(
                 user_id=user.id,
                 book_id=book.id,
                 value=value
             )
+            book.add_rating_count()
+            book.add_rating_sum(value)
             save_changes(new_rating)
         else:
             rating_exists.value = value
+            if book.rating_count < 1:
+                book.rating_count = 1
+            book.sub_rating_sum(rating_exists.value)
+            book.add_rating_sum(value)
             save_changes(rating_exists)
+        save_changes(book)
         response_object = {
             'status': 'success',
             'message': 'New rating for book successfully added.',

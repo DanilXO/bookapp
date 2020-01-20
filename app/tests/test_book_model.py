@@ -28,6 +28,10 @@ class TestBookModel(BaseTestCase):
         self.ratings = [Rating(user_id=self.user.id, book_id=self.book.id, value=randint(1, 5))
                         for _ in range(self.ratings_len)]
         db.session.add_all(self.ratings)
+        for rating in self.ratings:
+            self.book.add_rating_count()
+            self.book.add_rating_sum(rating.value)
+        db.session.add(self.book)
         db.session.commit()
 
     def test_ratings_value(self):
